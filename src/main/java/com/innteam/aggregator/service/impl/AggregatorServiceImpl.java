@@ -26,15 +26,14 @@ public class AggregatorServiceImpl implements AggregatorService {
     private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
-    public AggregatorServiceImpl(RestClient restClient) { //TODO IS IT SINGLETON?? HOW REQUEST WILL WORK ASYNC?
+    public AggregatorServiceImpl(RestClient restClient) {
         this.restClient = restClient;
     }
 
     @Override
     public List<AggregatedCamera> getAggregatedData() {
         List<AggregatedCamera> aggregatedCameras = new ArrayList<>();
-        //getList
-        //put sources and tokens to queues
+
         JsonFactory f = new MappingJsonFactory();
         try {
             InputStream cameras = restClient.getCameras();
