@@ -1,27 +1,23 @@
 package com.innteam.aggregator.utils;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.MappingJsonFactory;
+import com.innteam.aggregator.model.Camera;
 import com.innteam.aggregator.model.SourceData;
 import com.innteam.aggregator.model.TokenData;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.*;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class RestClient {
     private RestTemplate rest;
     private HttpHeaders headers;
     @Value("${mocky.address}")
-    private String server = "http://www.mocky.io/v2/5c51b9dd3400003252129fb5";
+    private String server;
 
     public RestClient() {
         this.rest = new RestTemplate();
@@ -30,13 +26,10 @@ public class RestClient {
         headers.add("Accept", "*/*");
     }
 
-    public InputStream getCameras() throws IOException {
-        HttpEntity<String> requestEntity = new HttpEntity<>("", headers);
-        ResponseEntity<Resource> responseEntity = rest.exchange(server, HttpMethod.GET, requestEntity, Resource.class);
-        InputStream inputStream = responseEntity.getBody().getInputStream();
-        JsonFactory f = new MappingJsonFactory();
-        JsonParser jp = f.createParser(inputStream);
-        return inputStream;
+    public List<Camera> getCameras() {
+        ResponseEntity<Camera[]> response = rest.getForEntity(server, Camera[].class);
+        Camera[] body = response.getBody();
+        return Arrays.asList(body);
     }
 
     public TokenData getToken(String uri) {
